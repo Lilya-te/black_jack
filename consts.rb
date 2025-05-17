@@ -1,0 +1,8 @@
+module Consts
+
+	WIN_POINTS = 21
+	
+	DEALER_CRITIC_POINTS = 17
+
+	MAX_NOMINAL_OF_2 = 22
+end

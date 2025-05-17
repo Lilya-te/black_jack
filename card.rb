@@ -7,11 +7,11 @@ class Card
 		@value = value
 	end
 
-	def nominal
-		return [1, 11] if value == :ace
+	def nominals
+		return [1, 11] if value == 'ace'
 		
-		return 10 if %i[jack queen king].include?(value)
+		return 10 if %w[jack queen king].include?(value)
 		
-		return value
+		return value.to_i
 	end
 end
