@@ -14,4 +14,8 @@ class Card
 		
 		return value.to_i
 	end
+
+	def show
+		"#{@value} #{Consts::CARD_SUITS[@suit.to_sym]}"
+	end
 end

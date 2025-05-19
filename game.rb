@@ -1,7 +1,8 @@
 # Ход игры
 # Константы: Карты в игре, Свободные карты, Ставка сделана, Игрок чья очередь
 # Метод старт
-
+require_relative 'consts'
+require_relative 'bank'
 require_relative 'diler'
 require_relative 'visitor'
 require_relative 'deck'
@@ -15,28 +16,38 @@ class Game
 
 	def start
 		@diler = Diler.new
+		@bank = Bank.new
 		puts "What is your name?"
 		name = gets.chomp
 		@visitor = Visitor.new(name)
+
 		lets_play = 'Y'
 		while lets_play == 'Y'
 			round
-			puts 'One more? (Y/N)'
-			lets_play = gets.chomp.upcase
+			if @visitor.balance > 0 && @diler.balance > 0
+				puts 'One more? (Y/N)'
+				lets_play = gets.chomp.upcase
+			else
+				puts "#{@visitor.name} has ZERO balance" if @visitor.balance == 0
+				puts "#{@diler.name} has ZERO balance" if @diler.balance == 0
+				puts "GAME IS OVER!"
+				lets_play = 'N'
+			end
 		end
 	end
 
 	def round()
 		drop_players_cards
+
+		@bank.get_bets([@diler, @visitor])
 		first_dealt
 
-		puts "Your cards on hand #{@visitor.cards_on_hand}"
-		puts "@diler.cards_on_hand = #{@diler.cards_on_hand}"
-		# отобразить забрюленные карты диллера
-		
-		# положить в банк по 10 уе
-		# отобразить баланс банка, баланс каждого гостя
-		# Ход гостя
+		puts "@visitor.balance = #{@visitor.balance}"
+		puts "@diler.balance = #{@diler.balance}"
+
+		puts "!!! Your cards on hand #{@visitor.cards_on_hand.map(&:show)}"
+		puts "!!! @diler.cards_on_hand = #{@diler.cards_on_hand.map(&:show)}"
+
 		visitor_step
 		unless @visitor.finish
 			diler_step
@@ -44,8 +55,7 @@ class Game
 		end
 
 		calculate_result
-		complete_winner
-		# update_bank
+		@bank.count_winner complete_winner
 	end
 
 	private
@@ -100,11 +110,14 @@ class Game
 	end
 
 	def complete_winner
+		winners = []
 		if @visitor.cards_points == @diler.cards_points 
 			if @visitor.cards_points <= Consts::WIN_POINTS
 				puts "You both are winners!"
+				winners = [@diler, @visitor]
 			else
 				puts "You both are losers"
+				winners = [@diler, @visitor]
 			end
 		else
 			visitor_diff = Consts::WIN_POINTS - @visitor.cards_points
@@ -112,16 +125,23 @@ class Game
 
 			if diler_diff < 0 && visitor_diff < 0
 				puts "You both are losers"
+				winners = [@diler, @visitor]
 			elsif diler_diff < 0 && visitor_diff >= 0 
 				puts "You are winner!"
+				winners = [@visitor]
 			elsif diler_diff >= 0 && visitor_diff < 0 
 				puts "Diler wines!"
+				winners = [@diler]
 			elsif diler_diff < visitor_diff
 				puts "Diler wines!"
+				winners = [@diler]
 			else
 				puts "You are winner!"
+				winners = [@visitor]
 			end
 		end
+
+		winners
 	end
 
 end

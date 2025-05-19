@@ -26,7 +26,6 @@ class Player
 	def open
 		finish = true
 		@cards_points = calculate_points
-# Game.next_step
 	end
 
 	def drop_round

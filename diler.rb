@@ -17,9 +17,8 @@ class Diler < Player
 
 	def calculate_points
 		if cards_nominal.is_a?(Array)
-			result = 0
+			result = cards_nominal.min
 			cards_nominal.each { |nominal| result = [result, nominal].max if ((Consts::WIN_POINTS - nominal) > 0)  }
-
 			return result
 
 		else
@@ -29,6 +28,6 @@ class Diler < Player
 	end
 
 	def show_cards
-		[]
+		puts "Diler cards: #{cards_on_hand.map{"*"}.join}"
 	end
 end
