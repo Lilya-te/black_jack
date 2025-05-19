@@ -39,23 +39,21 @@ class Game
 	def round()
 		drop_players_cards
 
+		show_balances
+
 		@bank.get_bets([@diler, @visitor])
 		first_dealt
-
-		puts "@visitor.balance = #{@visitor.balance}"
-		puts "@diler.balance = #{@diler.balance}"
-
-		puts "!!! Your cards on hand #{@visitor.cards_on_hand.map(&:show)}"
-		puts "!!! @diler.cards_on_hand = #{@diler.cards_on_hand.map(&:show)}"
 
 		visitor_step
 		unless @visitor.finish
 			diler_step
-			visitor_step 
+			visitor_step unless (@visitor.cards_on_hand.count == 3 && @diler.cards_on_hand.count == 3) 
 		end
 
 		calculate_result
 		@bank.count_winner complete_winner
+
+		show_balances
 	end
 
 	private
@@ -84,6 +82,7 @@ class Game
 
 		num = gets.chomp.to_i
 		option = OPTIONS.find{|act| act[:id] == num}
+
 		puts option[:description]
 		player_step @visitor, option[:action]
 	end
@@ -105,8 +104,19 @@ class Game
 	def calculate_result
 		@visitor.open
 		@diler.open
-		puts "@visitor.cards_points = #{@visitor.cards_points}"
-		puts "@diler.cards_points = #{@diler.cards_points}"
+		show_cards_points
+	end
+
+	def show_balances
+		[@visitor, @diler].each do |player|
+			printf "%-2<name>s %-30<balance>s\n", { name: player.name, balance: player.balance}
+		end
+	end
+
+	def show_cards_points
+		[@visitor, @diler].each do |player|
+			printf "%-2<name>s %-30<cards_points>s\n", { name: player.name, cards_points: player.cards_points}
+		end
 	end
 
 	def complete_winner

@@ -7,7 +7,7 @@ require_relative 'consts'
 
 class Player
 
-	attr_reader :type
+	attr_reader :type, :name
 	attr_accessor :balance, :cards_on_hand, :cards_points, :finish
 
 	def skip
@@ -20,11 +20,10 @@ class Player
 	def ask_card(deck)
 		card = deck.give_card
 		@cards_on_hand << card
-		show_cards
 	end
 
 	def open
-		finish = true
+		@finish = true
 		@cards_points = calculate_points
 	end
 
@@ -47,21 +46,14 @@ class Player
 
     def cards_nominal
     	nominals_on_hand = cards_on_hand.map(&:nominals)
-    	if nominals_on_hand.any?{ |item| item.is_a?(Array) }
-			result_array = nil
-			nominals_on_hand.each do |nominal|
-				nominal = [nominal] if nominal.is_a?(Integer)
-				result_array ||= nominal
-				result_array = result_array.product(nominal).map(&:sum)
-			end
-			result_array.uniq!
-			return result_array
-		else 
-			nominals_on_hand.sum
-		end
-    end
+    	return nominals_on_hand.sum if  nominals_on_hand.all?{ |item| item.is_a?(Integer) }
 
-    # def method_missing
-    # 	puts "Something went wrong"
-    # end
+    	result_array = nil
+		nominals_on_hand.each do |nominal|
+			nominal = [nominal] if nominal.is_a?(Integer)
+			result_array ||= nominal
+			result_array = result_array.product(nominal).map(&:sum)
+		end
+		result_array.uniq
+    end
 end

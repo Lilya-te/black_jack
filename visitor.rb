@@ -7,18 +7,12 @@ class Visitor < Player
 	end
 
 	def calculate_points
-		if cards_nominal.is_a?(Array)
-			puts "cards_nominal = #{cards_nominal}"
-			puts "Chose your points:"
+		return cards_nominal unless cards_nominal.is_a?(Array)
 
-			cards_nominal.each_with_index{|res, inx| puts "#{inx} - #{res}"}
+		puts "Chose your points:"
 
-			return cards_nominal[gets.chomp.to_i]
-
-		else
-			return cards_nominal
-
-		end
+		cards_nominal.each_with_index{|res, inx| puts "#{inx} - #{res}"}
+		return cards_nominal[gets.chomp.to_i]
 	end
 
 	def show_cards
