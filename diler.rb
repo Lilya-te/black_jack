@@ -1,33 +1,28 @@
+# frozen_string_literal: true
+
 # Константа дилера - 17
 require_relative 'player'
 
 class Diler < Player
+  def initialize
+    super(:diler, 'Diler')
+  end
 
-	def initialize
-		super(:diler, 'Diler')
-	end
+  def step
+    return :skip if calculate_points >= Consts::DEALER_CRITIC_POINTS
 
-	def step
-		if calculate_points >= Consts::DEALER_CRITIC_POINTS
-			return :skip
-		else
-			return :ask_card
-		end
-	end
+    :ask_card
+  end
 
-	def calculate_points
-		if cards_nominal.is_a?(Array)
-			result = cards_nominal.min
-			cards_nominal.each { |nominal| result = [result, nominal].max if ((Consts::WIN_POINTS - nominal) > 0)  }
-			return result
+  def calculate_points
+    return cards_nominal unless cards_nominal.is_a?(Array)
 
-		else
-			return cards_nominal
+    result = cards_nominal.min
+    cards_nominal.each { |nominal| result = [result, nominal].max if (Consts::WIN_POINTS - nominal).positive? }
+    result
+  end
 
-		end
-	end
-
-	def show_cards
-		puts "Diler cards: #{cards_on_hand.map{"*"}.join}"
-	end
+  def hidden_cards
+    cards_on_hand.map { '*' }.join
+  end
 end
